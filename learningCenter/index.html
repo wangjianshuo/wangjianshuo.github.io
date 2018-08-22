@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="format-detection" content="email=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>学习中心</title>
+    <link rel="stylesheet" href="css/skin.css">
+</head>
+<body>
+<div class="today_study" id="index">
+    <div class="container">
+        <template v-for="(item,index) in learningList">
+            <div class="video_box">
+                <div class="video_con">
+                    <video preload="none" controls :src="item.src" poster="./images/a-bg.jpg"></video>
+                </div>
+            </div>
+            <div class="ebook_container">
+                <div class="ebook_content">
+                    <p>{{item.value}}</p>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+<script charset="UTF-8" src="../lib/vuejs/2.5.16/vue.min.js"></script>
+<script charset="UTF-8" src="../lib/vue-resource/1.5.1/vue-resource.min.js"></script>
+<script>
+    new Vue({
+        el: '#index',
+        data: {
+            learningList: []
+        },
+        methods: {
+            load: function () {
+                this.$http.get('https://www.17parent.com/data/logsDetailById?ball_robot=allow&id=5b7a8b50cf2aa85218809865').then((response) => {
+                    let m = JSON.parse(response.data.content[0].op);
+                    let l = Object.keys(m).map((k) => {
+                        return {
+                            key: k,
+                            value: m[k].name,
+                            src: m[k].url === '' ? `http://xinqiang.wang/svn/svn/shuoshuo/pinkfong/${k}.mp4` : m[k].url
+                        }
+                    });
+                    this.learningList = l.reverse();
+                }, (response) => {
+                    console.error(response);
+                    this.learningList = [];
+                });
+            },
+            handleScroll() {
+            },
+        },
+        mounted: function () {
+            this.load();
+        }
+    });
+
+</script>
+</body>
+</html>
