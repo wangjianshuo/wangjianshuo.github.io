@@ -47,7 +47,7 @@ h2,h3{page-break-after:avoid}}
 [v-cloak]{display:none}
 body,html{background:#fdfdfd}
 .today_study{position:relative}
-.today_study .container{width:89%;margin:0 auto}
+.today_study .container{width:100%;margin:0 auto}
 .today_study .container .header{padding:1rem 0}
 .today_study .container .header p{font-size:1rem;color:#171717;text-align:center;letter-spacing:.05rem}
 .today_study .container .dialog_box{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;margin-top:1rem}

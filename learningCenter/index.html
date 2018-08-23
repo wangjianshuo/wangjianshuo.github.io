@@ -8,35 +8,69 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <title>学习中心</title>
     <link rel="stylesheet" href="css/skin.css">
+    <link rel="stylesheet" href="../lib/vue-stroll/css/vuescroll.css">
+
 </head>
 <body>
-<div class="today_study" id="index">
+<div class="today_study" id="index" v-cloak="">
     <div class="container">
-        <template v-for="(item,index) in learningList">
-            <div class="video_box">
-                <div class="video_con">
-                    <video preload="none" controls :src="item.src" poster="./images/a-bg.jpg"></video>
+        <div style="width: 100%; text-align: center; padding: 3px 0; font-size: 10px;">
+            页码：{{currentPage}}/{{totalPage}}
+            <template v-if="currentPage != totalPage">
+                (下拉可刷新)
+            </template>
+
+        </div>
+        <vue-scroll :ops="ops" @refresh-start="handleRS" @load-before-deactivate="handleLBD"  @handle-scroll-complete="handleComplete">
+            <template v-for="(item,index) in showLearningList">
+                <div class="video_box">
+                    <div class="video_con">
+                        <video preload="none" controls :src="item.src" poster="./images/a-bg.jpg"></video>
+                    </div>
                 </div>
-            </div>
-            <div class="ebook_container">
-                <div class="ebook_content">
-                    <p>{{item.value}}-{{item.key}}</p>
+                <div class="ebook_container">
+                    <div class="ebook_content">
+                        <p>{{item.value}}-{{item.key}}</p>
+                    </div>
                 </div>
-            </div>
-        </template>
+            </template>
+        </vue-scroll>
     </div>
 </div>
 <script charset="UTF-8" src="../lib/vuejs/2.5.16/vue.min.js"></script>
 <script charset="UTF-8" src="../lib/vue-resource/1.5.1/vue-resource.min.js"></script>
+<script src="../lib/vue-stroll/js/vuescroll.js"></script>
 <script>
+    let VueStroll = window['vue-stroll'];
     new Vue({
         el: '#index',
         data: {
-            learningList: []
+            learningList: [],
+            showLearningList: [],
+            currentPage: 1,
+            totalPage: 0,
+            pageSize: 3,
+            ops: {
+                vuescroll: {
+                    mode: 'slide',
+                    pullRefresh: {
+                        enable: true,
+                        tips: {
+                            deactive: '下拉更新数据',
+                            active: '刷新',
+                            start: '加载中...',
+                            beforeDeactive: '拉取成功'
+                        }
+                    },
+                }
+            },
+            refresh: false
         },
+        components: {VueStroll},
         methods: {
             load: function () {
-                this.$http.get('https://www.17parent.com/data/logsDetailById?ball_robot=allow&id=5b7a8b50cf2aa85218809865').then((response) => {
+                const self = this;
+                self.$http.get('https://www.17parent.com/data/logsDetailById?ball_robot=allow&id=5b7a8b50cf2aa85218809865').then((response) => {
                     let m = JSON.parse(response.data.content[0].op);
                     let l = Object.keys(m).map((k) => {
                         return {
@@ -45,16 +79,47 @@
                             src: m[k].url === '' ? `http://xinqiang.wang/svn/svn/shuoshuo/pinkfong/${k}.mp4` : m[k].url
                         }
                     });
-                    this.learningList = l.reverse();
+                    self.learningList = l.reverse();
+                    self.totalPage = Math.ceil(l.length / self.pageSize);
+                    self.showLearningList = [...self.learningList].splice(0, self.pageSize);
                 }, (response) => {
                     console.error(response);
-                    this.learningList = [];
+                    self.learningList = [];
                 });
             },
-            handleScroll() {
+
+            handleRS(vsInstance, refreshDom, done) {
+                const self = this;
+                if (self.refresh) {
+                    alert("数据加载中...")
+                }
+                self.refresh = true;
+                console.info(self.refresh);
+                console.info("总页数 " + self.totalPage);
+                console.info("当前页 " + self.currentPage);
+                if (self.refresh && self.totalPage > this.currentPage) {
+                    self.currentPage += 1;
+                    setTimeout(() => {
+                        self.fetchSearchList();
+                    }, 500);
+                } else {
+                    self.ops.vuescroll.pullRefresh.enable = false;
+                }
             },
+            handleLBD(vm, loadDom, done) {
+                console.info(2);
+            },
+            fetchSearchList() {
+                const self = this;
+                self.showLearningList = [...self.learningList].splice(0, self.pageSize * self.currentPage);
+                self.refresh = false;
+            },
+            handleComplete(){
+                console.log('scroll complete！')
+            }
         },
-        mounted: function () {
+
+        mounted() {
             this.load();
         }
     });
