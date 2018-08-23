@@ -47,7 +47,7 @@ h2,h3{page-break-after:avoid}}
 [v-cloak]{display:none}
 body,html{background:#fdfdfd}
 .today_study{position:relative}
-.today_study .container{width:100%;margin:0 auto}
+.today_study .container{width:100%;margin:20px auto}
 .today_study .container .header{padding:1rem 0}
 .today_study .container .header p{font-size:1rem;color:#171717;text-align:center;letter-spacing:.05rem}
 .today_study .container .dialog_box{display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex;margin-top:1rem}
@@ -91,3 +91,5 @@ body,html{background:#fdfdfd}
 .today_study .container .ebook_container .ebook_content img{width:100%;height:10.35rem}
 .today_study .container .ebook_container .ebook_content p{font-size:.7rem;color:#6a707f;letter-spacing:.075rem;text-align:center;margin-top:.25rem}
 .today_study .container .footer{text-align:center;padding:1rem 0 2rem;font-size:.6rem;color:#b8b8b8;letter-spacing:.1rem}
+
+.today_study .topTip{width: 100%; text-align: center; padding: 3px 0; font-size: 10px; position: fixed; top: 0; z-index: 1; background-color: #ffffff;}
